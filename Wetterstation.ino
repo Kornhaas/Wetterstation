@@ -25,6 +25,13 @@ int SDScounter = 0;
 //Zähler für die Anzahl der Läufe
 int ESPRunCounter = 0;
 
+//Regenmengenmesser
+int rainMeterSensor = D1;
+unsigned int watercounter = 0;
+float wassermengeliter;
+int wassermengenumrechnungsfaktor = 444;
+
+
 //Letzter Status des SDS
 bool SDS_last_status = false;
 
@@ -43,6 +50,11 @@ ESP8266WebServer server(80);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
+// Interrupt für Regenwippe
+void ICACHE_RAM_ATTR detectsRain() {
+  watercounter++;
+}
+
 
 
 void Web_Software_Update() {
@@ -52,6 +64,12 @@ void Web_Software_Update() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+
+  // PIR Motion Sensor mode INPUT_PULLUP
+  pinMode(rainMeterSensor, INPUT_PULLUP);
+  // Set motionSensor pin as interrupt, assign interrupt function and set RISING mode
+  attachInterrupt(digitalPinToInterrupt(rainMeterSensor), detectsRain, RISING);
+
 
   //WiFiManager
   //Local intialization. Once its business is done, there is no need to keep it around
@@ -132,6 +150,7 @@ void setup() {
   });
   ArduinoOTA.begin();
 
+  //NTP Client starten
   timeClient.begin();
 
   Serial.println("Setup finished");
@@ -147,6 +166,7 @@ void setup() {
 
 void loop() {
   server.handleClient();
+  wassermengeliter = (float) watercounter / wassermengenumrechnungsfaktor;
   // Serial.print(SDScounter);
   SDScounter = SDScounter + 1;
   // Serial.print(" -> ");
@@ -178,6 +198,11 @@ void loop() {
 
       // if you want to just print the measured values, you can use toString() method as well
       Serial.println(pm.toString());
+
+      Serial.println("Wassermeng: ");
+      Serial.print(wassermengeliter);
+      Serial.println(" l");
+
 
     } else {
 
