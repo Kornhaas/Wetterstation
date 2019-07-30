@@ -1,0 +1,24 @@
+<html>
+<head>
+<title>Wetterstation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+body{text-align:center;font-family:verdana;}
+input{width:300px}
+button{border:0;border-radius:0.3rem;background-color:#04669E;color:#fff;line-height:2.4rem;font-size:1.2rem;width:300px}
+</style>
+</head>
+<body>
+<h1>Wetterstation NAME</h1>
+<br>
+<form action="/setup" method="get" id="form1">
+<p>Name:<br><input name="disp" value="Hinterhof" type="text"><br></p>
+<p>Messinterval (Minuten):<br><input name="scan" value="10" type="number" min='1' max='15'><br></p>
+<p>MQTT-Broker:<br><input name="mqtt" value="heizung.fritz.box" type="text"><br></p>
+<p>NTP-Server:<br><input name="ntp" value="0.de.pool.ntp.org" type="text"></p>
+</form>
+<br><br>
+<p><button type="submit" form="form1" value="Submit">Speichern</button></p>
+<p><button onclick="window.location.href='/'">Zurück</button></p>
+</body>
+</html>
